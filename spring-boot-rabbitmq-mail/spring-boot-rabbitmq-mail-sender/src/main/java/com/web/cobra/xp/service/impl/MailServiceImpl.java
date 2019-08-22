@@ -1,6 +1,7 @@
 package com.web.cobra.xp.service.impl;
 
 import java.io.File;
+import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -30,12 +31,15 @@ public class MailServiceImpl implements MailService {
 
 	/**
 	 * 发送文本邮件
+	 * 
 	 * @param to
 	 * @param subject
 	 * @param content
 	 */
 	@Override
 	public void sendSimpleMail(String to, String subject, String content) {
+
+
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(from);
 		message.setTo(to);
@@ -53,6 +57,7 @@ public class MailServiceImpl implements MailService {
 
 	/**
 	 * 发送html邮件
+	 * 
 	 * @param to
 	 * @param subject
 	 * @param content
@@ -78,6 +83,7 @@ public class MailServiceImpl implements MailService {
 
 	/**
 	 * 发送带附件的邮件
+	 * 
 	 * @param to
 	 * @param subject
 	 * @param content
@@ -107,6 +113,7 @@ public class MailServiceImpl implements MailService {
 
 	/**
 	 * 发送正文中有静态资源（图片）的邮件
+	 * 
 	 * @param to
 	 * @param subject
 	 * @param content
