@@ -1,7 +1,6 @@
 package com.web.cobra.xp.service.impl;
 
 import java.io.File;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
