@@ -5,17 +5,25 @@ import java.io.Serializable;
 public class MailMessage implements Serializable {
 
 	private static final long serialVersionUID = 8193219250555548937L;
-	private String to;
+	private String from;
+	private String[] to;
 	private String subject;
 	private String content;
-	private String rscPath;
-	private String rscId;
+	private String attachment;
 
-	public String getTo() {
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String[] getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public void setTo(String[] to) {
 		this.to = to;
 	}
 
@@ -35,20 +43,12 @@ public class MailMessage implements Serializable {
 		this.content = content;
 	}
 
-	public String getRscPath() {
-		return rscPath;
+	public String getAttachment() {
+		return attachment;
 	}
 
-	public void setRscPath(String rscPath) {
-		this.rscPath = rscPath;
-	}
-
-	public String getRscId() {
-		return rscId;
-	}
-
-	public void setRscId(String rscId) {
-		this.rscId = rscId;
+	public void setAttachment(String attachment) {
+		this.attachment = attachment;
 	}
 
 }

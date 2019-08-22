@@ -4,28 +4,51 @@ import java.io.Serializable;
 
 public class MailMessage implements Serializable {
 
-	private static final long serialVersionUID = 9193668712127900025L;
-	private String id;
-	private String name;
+	private static final long serialVersionUID = 8193219250555548937L;
+	private String from;
+	private String[] to;
+	private String subject;
+	private String content;
+	private String attachment;
 
-	public String getId() {
-		return id;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
-	public String getName() {
-		return name;
+	public String[] getTo() {
+		return to;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTo(String[] to) {
+		this.to = to;
 	}
 
-	@Override
-	public String toString() {
-		return "User{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
+	public String getSubject() {
+		return subject;
 	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(String attachment) {
+		this.attachment = attachment;
+	}
+
 }

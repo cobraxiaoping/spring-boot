@@ -33,7 +33,7 @@ public class RabbitmqConfig {
 	/**************** 队列和交换机绑定开始 ***************/
 	@Bean
 	public Binding directQueueFirstBinding() {
-		return BindingBuilder.bind(directQueueMail()).to(directExchange()).with("mail");
+		return BindingBuilder.bind(directQueueMail()).to(directExchange()).with("eamil");
 	}
 	/**************** 交换机和队列绑定结束 ***************/
 

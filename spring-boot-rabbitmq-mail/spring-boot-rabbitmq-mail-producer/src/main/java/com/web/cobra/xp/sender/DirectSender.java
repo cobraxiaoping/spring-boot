@@ -11,8 +11,8 @@ import com.web.cobra.xp.entity.MailMessage;
 public class DirectSender {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
-	public void send(MailMessage user) {
-		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "mail", user);
+	public void send(MailMessage email) {
+		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "email", email);
 	}
 
 }
