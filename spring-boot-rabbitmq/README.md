@@ -75,3 +75,58 @@ RouteKey模糊匹配的队列。
 4.“#”表示0个或若干个关键字，“*”表示一个关键字。如“log.*”能与“log.warn”匹配，无法与“log.warn.timeout”匹配；但是“log.#”能与上述两者匹配。
 
 5.同样，如果Exchange没有发现能够与RouteKey匹配的Queue，则会抛弃此消息。
+
+
+
+
+
+## spring-boot整合rabbitmq参数详解
+
+| 属性名                   | 说明                   | 默认值    |
+| ------------------------ | ---------------------- | --------- |
+| spring.rabbitmq.host     | RabbitMQ的主机地址     | localhost |
+| spring.rabbitmq.port     | RabbitMQ的端口号       | 5672      |
+| spring.rabbitmq.username | 登录到RabbitMQ的用户名 |           |
+| spring.rabbitmq.password | 登录到RabbitMQ的密码   |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+|                          |                        |           |
+
+
+
+<https://blog.csdn.net/en_joker/article/details/80103519>
