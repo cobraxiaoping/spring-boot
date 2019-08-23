@@ -8,12 +8,13 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.web.cobra.xp.service.MailService;
 
@@ -25,8 +26,8 @@ public class MailServiceImpl implements MailService {
 	@Autowired
 	private JavaMailSender mailSender;
 
-	@Value("${mail.fromMail.addr}")
-	private String from;
+	@Autowired
+	private TemplateEngine templateEngine;
 
 	/**
 	 * 发送文本邮件
@@ -36,8 +37,7 @@ public class MailServiceImpl implements MailService {
 	 * @param content
 	 */
 	@Override
-	public void sendSimpleMail(String to, String subject, String content) {
-
+	public void sendSimpleMail(String from, String to, String subject, String content) {
 
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(from);
@@ -62,7 +62,7 @@ public class MailServiceImpl implements MailService {
 	 * @param content
 	 */
 	@Override
-	public void sendHtmlMail(String to, String subject, String content) {
+	public void sendHtmlMail(String from, String to, String subject, String content) {
 		MimeMessage message = mailSender.createMimeMessage();
 
 		try {
@@ -88,7 +88,7 @@ public class MailServiceImpl implements MailService {
 	 * @param content
 	 * @param filePath
 	 */
-	public void sendAttachmentsMail(String to, String subject, String content, String filePath) {
+	public void sendAttachmentsMail(String from, String to, String subject, String content, String filePath) {
 		MimeMessage message = mailSender.createMimeMessage();
 
 		try {
@@ -119,7 +119,8 @@ public class MailServiceImpl implements MailService {
 	 * @param rscPath
 	 * @param rscId
 	 */
-	public void sendInlineResourceMail(String to, String subject, String content, String rscPath, String rscId) {
+	public void sendInlineResourceMail(String from, String to, String subject, String content, String rscPath,
+			String rscId) {
 		MimeMessage message = mailSender.createMimeMessage();
 
 		try {
@@ -137,5 +138,12 @@ public class MailServiceImpl implements MailService {
 		} catch (MessagingException e) {
 			logger.error("发送嵌入静态资源的邮件时发生异常！", e);
 		}
+	}
+
+	@Override
+	public void sendTemplateMail(String from, String to, String subject, String content, String templateName,
+			Context context) {
+		String emailContent = templateEngine.process(templateName, context);
+		sendHtmlMail(from, to, subject, emailContent);
 	}
 }

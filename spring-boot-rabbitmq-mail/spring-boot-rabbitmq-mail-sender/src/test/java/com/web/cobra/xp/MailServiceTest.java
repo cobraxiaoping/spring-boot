@@ -23,19 +23,19 @@ public class MailServiceTest {
 
 	@Test
 	public void testSimpleMail() throws Exception {
-		mailService.sendSimpleMail("451688567@qq.com", "test simple mail", " hello this is simple mail");
+		mailService.sendSimpleMail("337517598@qq.com","451688567@qq.com", "test simple mail", " hello this is simple mail");
 	}
 
 	@Test
 	public void testHtmlMail() throws Exception {
 		String content = "<html>\n" + "<body>\n" + "    <h3>hello world ! 这是一封html邮件!</h3>\n" + "</body>\n" + "</html>";
-		mailService.sendHtmlMail("451688567@qq.com", "test simple mail", content);
+		mailService.sendHtmlMail("337517598@qq.com","451688567@qq.com", "test simple mail", content);
 	}
 
 	@Test
 	public void sendAttachmentsMail() {
 		String filePath = "C:\\Users\\Administrator\\Desktop\\1.jpg";
-		mailService.sendAttachmentsMail("451688567@qq.com", "主题：带附件的邮件", "有附件，请查收！", filePath);
+		mailService.sendAttachmentsMail("337517598@qq.com","451688567@qq.com", "主题：带附件的邮件", "有附件，请查收！", filePath);
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class MailServiceTest {
 		String content = "<html><body>这是有图片的邮件：<img src=\'cid:" + rscId + "\' ></body></html>";
 		String imgPath = "C:\\Users\\Administrator\\Desktop\\1.jpg";
 
-		mailService.sendInlineResourceMail("451688567@qq.com", "主题：这是有图片的邮件", content, imgPath, rscId);
+		mailService.sendInlineResourceMail("337517598@qq.com","451688567@qq.com", "主题：这是有图片的邮件", content, imgPath, rscId);
 	}
 
 	@Test
@@ -54,6 +54,6 @@ public class MailServiceTest {
 		context.setVariable("id", "006");
 		String emailContent = templateEngine.process("emailTemplate", context);
 
-		mailService.sendHtmlMail("451688567@qq.com", "主题：这是模板邮件", emailContent);
+		mailService.sendHtmlMail("337517598@qq.com","451688567@qq.com", "主题：这是模板邮件", emailContent);
 	}
 }

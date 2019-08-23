@@ -21,7 +21,7 @@ public class DirectReceiver {
 		System.out.println("【receiveDirectMailQueue监听到消息】" + email.toString());
 		if (!ObjectUtils.isEmpty(email.getTo())) {
 			for (String to : email.getTo()) {
-				emailService.sendSimpleMail(to, email.getSubject(), email.getContent());
+				emailService.sendSimpleMail(email.getFrom(),to, email.getSubject(), email.getContent());
 			}
 		}
 	}
