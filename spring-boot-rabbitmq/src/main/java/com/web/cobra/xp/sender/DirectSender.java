@@ -1,5 +1,8 @@
 package com.web.cobra.xp.sender;
 
+import java.util.UUID;
+
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +16,8 @@ public class DirectSender {
 	private RabbitTemplate rabbitTemplate;
 
 	public void send(User user) {
-		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user);
+		//this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user);
+		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user, new CorrelationData(UUID.randomUUID().toString()));
 	}
 
 }

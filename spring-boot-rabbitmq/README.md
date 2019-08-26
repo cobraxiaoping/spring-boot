@@ -82,51 +82,158 @@ RouteKey模糊匹配的队列。
 
 ## spring-boot整合rabbitmq参数详解
 
-| 属性名                   | 说明                   | 默认值    |
-| ------------------------ | ---------------------- | --------- |
-| spring.rabbitmq.host     | RabbitMQ的主机地址     | localhost |
-| spring.rabbitmq.port     | RabbitMQ的端口号       | 5672      |
-| spring.rabbitmq.username | 登录到RabbitMQ的用户名 |           |
-| spring.rabbitmq.password | 登录到RabbitMQ的密码   |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
-|                          |                        |           |
+\# base
+spring.rabbitmq.host: 服务Host
+spring.rabbitmq.port: 服务端口
+spring.rabbitmq.username: 登陆用户名
+spring.rabbitmq.password: 登陆密码
+spring.rabbitmq.virtual-host: 连接到rabbitMQ的vhost
+spring.rabbitmq.addresses: 指定client连接到的server的地址，多个以逗号分隔(优先取addresses然后再取host)
+spring.rabbitmq.requested-heartbeat: 指定心跳超时，单位秒，0为不指定；默认60s
+spring.rabbitmq.publisher-confirms: 是否启用【发布确认】
+spring.rabbitmq.publisher-returns: 是否启用【发布返回】
+spring.rabbitmq.connection-timeout: 连接超时，单位毫秒，0表示无穷大，不超时
+spring.rabbitmq.parsed-addresses:
+
+
+\# ssl
+spring.rabbitmq.ssl.enabled: 是否支持ssl
+spring.rabbitmq.ssl.key-store: 指定持有SSL certificate的key store的路径
+spring.rabbitmq.ssl.key-store-password: 指定访问key store的密码
+spring.rabbitmq.ssl.trust-store: 指定持有SSL certificates的Trust store
+spring.rabbitmq.ssl.trust-store-password: 指定访问trust store的密码
+spring.rabbitmq.ssl.algorithm: ssl使用的算法，例如，TLSv1.1
+
+
+\# cache
+spring.rabbitmq.cache.channel.size: 缓存中保持的channel数量
+spring.rabbitmq.cache.channel.checkout-timeout: 当缓存数量被设置时，从缓存中获取一个channel的超时时间，单位毫秒；如果为0，则总是创建一个新channel
+spring.rabbitmq.cache.connection.size: 缓存的连接数，只有是CONNECTION模式时生效
+spring.rabbitmq.cache.connection.mode: 连接工厂缓存模式：CHANNEL 和 CONNECTION
+
+
+\# listener
+spring.rabbitmq.listener.simple.auto-startup: 是否启动时自动启动容器
+spring.rabbitmq.listener.simple.acknowledge-mode: 表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
+spring.rabbitmq.listener.simple.concurrency: 最小的消费者数量
+spring.rabbitmq.listener.simple.max-concurrency: 最大的消费者数量
+spring.rabbitmq.listener.simple.prefetch: 指定一个请求能处理多少个消息，如果有事务的话，必须大于等于transaction数量.
+spring.rabbitmq.listener.simple.transaction-size: 指定一个事务处理的消息数量，最好是小于等于prefetch的数量.
+spring.rabbitmq.listener.simple.default-requeue-rejected: 决定被拒绝的消息是否重新入队；默认是true（与参数acknowledge-mode有关系）
+spring.rabbitmq.listener.simple.idle-event-interval: 多少长时间发布空闲容器时间，单位毫秒
+
+spring.rabbitmq.listener.simple.retry.enabled: 监听重试是否可用
+spring.rabbitmq.listener.simple.retry.max-attempts: 最大重试次数
+spring.rabbitmq.listener.simple.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
+spring.rabbitmq.listener.simple.retry.multiplier: 应用于上一重试间隔的乘数
+spring.rabbitmq.listener.simple.retry.max-interval: 最大重试时间间隔
+spring.rabbitmq.listener.simple.retry.stateless: 重试是有状态or无状态
+
+
+\# template
+spring.rabbitmq.template.mandatory: 启用强制信息；默认false
+spring.rabbitmq.template.receive-timeout: receive() 操作的超时时间
+spring.rabbitmq.template.reply-timeout: sendAndReceive() 操作的超时时间
+spring.rabbitmq.template.retry.enabled: 发送重试是否可用 
+spring.rabbitmq.template.retry.max-attempts: 最大重试次数
+spring.rabbitmq.template.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
+spring.rabbitmq.template.retry.multiplier: 应用于上一重试间隔的乘数
+spring.rabbitmq.template.retry.max-interval: 最大重试时间间隔
+
+属性配置可参照：<https://blog.csdn.net/en_joker/article/details/80103519>
 
 
 
-<https://blog.csdn.net/en_joker/article/details/80103519>
+
+
+## rabbit 手动确认消息
+
+配置消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
+
+spring.rabbitmq.listener.simple.acknowledge-mode=manual
+
+启用消息发布确认
+
+spring.rabbitmq.publisher-confirms=true
+
+启用发布返回
+
+spring.rabbitmq.publisher-returns=true
+
+
+
+实现消息确认回调，以及消息返回
+
+```java
+package com.web.cobra.xp.config;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
+import org.springframework.amqp.rabbit.core.RabbitTemplate.ReturnCallback;
+
+public class RabbitmqCallbackImpl implements ConfirmCallback, ReturnCallback {
+
+	private Logger log = LoggerFactory.getLogger(RabbitmqCallbackImpl.class);
+
+	/*
+	 * (消息发送到交换机确认机制，通过实现ConfirmCallback接口， 消息发送到Broker后触发回调，确认消息是否到达Borker服务器，
+	 * 也就是只确认是否正确到达Exchange中。)
+	 */
+	@Override
+	public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+		log.info("关联数据：{},ack:{},cause:{}", correlationData, ack, cause);
+		if (ack) {
+			log.info("消息到达rabbitmq服务器");
+		} else {
+			log.info("消息可能未到达rabbitmq服务器");
+		}
+	}
+
+	/*
+	 * (通过实现ReturnCallBack接口，启动消息失败返回，比如路由不到队列时触发回调。)
+	 */
+	@Override
+	public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+		String correlationId = message.getMessageProperties().getCorrelationId();
+		log.debug("消息：{} 发送失败, 应答码：{} 原因：{} 交换机: {}  路由键: {}", correlationId, replyCode, replyText, exchange,
+				routingKey);
+	}
+
+}
+
+```
+
+
+
+在配置rabbitmqTemplate
+
+```java
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+ 
+	@PostConstruct
+	public void initRabbitTemplate() {
+		// 设置生产者消息确认
+		rabbitTemplate.setConfirmCallback(new RabbitmqCallbackImpl());
+	}
+```
+
+
+
+手动确认消息参照
+
+```java
+	@RabbitListener(queues = RabbitmqConfig.DIRECT_QUEUE_FIRST)
+	public void receiveDirectQueueFirst(Message message,Channel channel,User user) {
+		System.out.println("【receiveDirectQueueFirst监听到消息】" + user.toString());
+		try {
+			channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+```
+

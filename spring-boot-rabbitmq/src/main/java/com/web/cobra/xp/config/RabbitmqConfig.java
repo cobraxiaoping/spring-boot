@@ -2,15 +2,30 @@ package com.web.cobra.xp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
 public class RabbitmqConfig {
+	
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+ 
+	@PostConstruct
+	public void initRabbitTemplate() {
+		// 设置生产者消息确认
+		rabbitTemplate.setConfirmCallback(new RabbitmqCallbackImpl());
+	}
+
 	// topic
 	public static final String TOPIC_QUEUE_FIRST = "topic.queue.first";
 	public static final String TOPIC_QUEUE_SECOND = "topic.queue.second";
@@ -100,17 +115,16 @@ public class RabbitmqConfig {
 	public Binding fanoutQueueSecondBinding() {
 		return BindingBuilder.bind(fanoutQueueSecond()).to(fanoutExchange());
 	}
-	
-	
+
 	@Bean
-    public Binding directQueueFirstBinding() {
-        return BindingBuilder.bind(directQueueFirst()).to(directExchange()).with("direct.pwl");
-    }
-	
+	public Binding directQueueFirstBinding() {
+		return BindingBuilder.bind(directQueueFirst()).to(directExchange()).with("direct.pwl");
+	}
+
 	@Bean
-    public Binding directQueueSecondBinding() {
-        return BindingBuilder.bind(directQueueSecond()).to(directExchange()).with("direct.pwl1");
-    }
+	public Binding directQueueSecondBinding() {
+		return BindingBuilder.bind(directQueueSecond()).to(directExchange()).with("direct.pwl1");
+	}
 
 	/**************** 交换机和队列绑定结束 ***************/
 
