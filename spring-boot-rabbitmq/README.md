@@ -78,74 +78,6 @@ RouteKey模糊匹配的队列。
 
 
 
-
-
-## spring-boot整合rabbitmq参数详解
-
-\# base
-spring.rabbitmq.host: 服务Host
-spring.rabbitmq.port: 服务端口
-spring.rabbitmq.username: 登陆用户名
-spring.rabbitmq.password: 登陆密码
-spring.rabbitmq.virtual-host: 连接到rabbitMQ的vhost
-spring.rabbitmq.addresses: 指定client连接到的server的地址，多个以逗号分隔(优先取addresses然后再取host)
-spring.rabbitmq.requested-heartbeat: 指定心跳超时，单位秒，0为不指定；默认60s
-spring.rabbitmq.publisher-confirms: 是否启用【发布确认】
-spring.rabbitmq.publisher-returns: 是否启用【发布返回】
-spring.rabbitmq.connection-timeout: 连接超时，单位毫秒，0表示无穷大，不超时
-spring.rabbitmq.parsed-addresses:
-
-
-\# ssl
-spring.rabbitmq.ssl.enabled: 是否支持ssl
-spring.rabbitmq.ssl.key-store: 指定持有SSL certificate的key store的路径
-spring.rabbitmq.ssl.key-store-password: 指定访问key store的密码
-spring.rabbitmq.ssl.trust-store: 指定持有SSL certificates的Trust store
-spring.rabbitmq.ssl.trust-store-password: 指定访问trust store的密码
-spring.rabbitmq.ssl.algorithm: ssl使用的算法，例如，TLSv1.1
-
-
-\# cache
-spring.rabbitmq.cache.channel.size: 缓存中保持的channel数量
-spring.rabbitmq.cache.channel.checkout-timeout: 当缓存数量被设置时，从缓存中获取一个channel的超时时间，单位毫秒；如果为0，则总是创建一个新channel
-spring.rabbitmq.cache.connection.size: 缓存的连接数，只有是CONNECTION模式时生效
-spring.rabbitmq.cache.connection.mode: 连接工厂缓存模式：CHANNEL 和 CONNECTION
-
-
-\# listener
-spring.rabbitmq.listener.simple.auto-startup: 是否启动时自动启动容器
-spring.rabbitmq.listener.simple.acknowledge-mode: 表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
-spring.rabbitmq.listener.simple.concurrency: 最小的消费者数量
-spring.rabbitmq.listener.simple.max-concurrency: 最大的消费者数量
-spring.rabbitmq.listener.simple.prefetch: 指定一个请求能处理多少个消息，如果有事务的话，必须大于等于transaction数量.
-spring.rabbitmq.listener.simple.transaction-size: 指定一个事务处理的消息数量，最好是小于等于prefetch的数量.
-spring.rabbitmq.listener.simple.default-requeue-rejected: 决定被拒绝的消息是否重新入队；默认是true（与参数acknowledge-mode有关系）
-spring.rabbitmq.listener.simple.idle-event-interval: 多少长时间发布空闲容器时间，单位毫秒
-
-spring.rabbitmq.listener.simple.retry.enabled: 监听重试是否可用
-spring.rabbitmq.listener.simple.retry.max-attempts: 最大重试次数
-spring.rabbitmq.listener.simple.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
-spring.rabbitmq.listener.simple.retry.multiplier: 应用于上一重试间隔的乘数
-spring.rabbitmq.listener.simple.retry.max-interval: 最大重试时间间隔
-spring.rabbitmq.listener.simple.retry.stateless: 重试是有状态or无状态
-
-
-\# template
-spring.rabbitmq.template.mandatory: 启用强制信息；默认false
-spring.rabbitmq.template.receive-timeout: receive() 操作的超时时间
-spring.rabbitmq.template.reply-timeout: sendAndReceive() 操作的超时时间
-spring.rabbitmq.template.retry.enabled: 发送重试是否可用 
-spring.rabbitmq.template.retry.max-attempts: 最大重试次数
-spring.rabbitmq.template.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
-spring.rabbitmq.template.retry.multiplier: 应用于上一重试间隔的乘数
-spring.rabbitmq.template.retry.max-interval: 最大重试时间间隔
-
-属性配置可参照：<https://blog.csdn.net/en_joker/article/details/80103519>
-
-
-
-
-
 ## rabbit 手动确认消息
 
 配置消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
@@ -236,4 +168,101 @@ public class RabbitmqCallbackImpl implements ConfirmCallback, ReturnCallback {
 		}
 	}
 ```
+
+
+
+## 死信队列设计
+
+### 死信队列简介
+
+在大多数的MQ中间件中，都有死信队列的概念。死信队列同其他的队列一样都是普通的队列。在RabbitMQ中并没有特定的“死信队列”类型，而是通过配置，将其实现。
+当我们在创建一个业务的交换机和队列的时候，可以配置参数，指明另一个队列为当前队列的死信队列，在RabbitMQ中，死信队列（严格的说应该是死信交换机）被称为DLX Exchange。当消息“死掉”后，会被自动路由到DLX Exchange的queue中。
+
+### 什么样的消息会进入死信队列？
+
+1.消息的TTL过期。
+2.消费者对broker应答Nack，并且消息禁止重回队列。
+3.Queue队列长度已达上限。
+
+### 场景分析
+
+以用户订单支付为场景。在各大电商平台上，订单的都有待支付时间，通常为30min。当用户超过30min未支付订单，该订单的状态应该会变成“超时取消”，或类似的状态值的改变。
+如果不使用MQ，可以设计一个定时任务，定时查询数据库，判断订单的状态和支付时间是否已经到期，若到期则修改订单的状态。但显然，这不是一个很好的操作，频繁访问数据库，造成不必要的资源浪费。
+使用MQ，我们可以在下单的时候，当订单数据入库后，发送一条Message到Queue中，并设置过期时间为30min或自定义的支付过期时间。
+
+
+
+死信队列的使用参照：<https://blog.csdn.net/shishishi777/article/details/99879419>
+
+
+
+
+
+
+
+
+
+
+
+## spring-boot整合rabbitmq参数详解
+
+\# base
+spring.rabbitmq.host: 服务Host
+spring.rabbitmq.port: 服务端口
+spring.rabbitmq.username: 登陆用户名
+spring.rabbitmq.password: 登陆密码
+spring.rabbitmq.virtual-host: 连接到rabbitMQ的vhost
+spring.rabbitmq.addresses: 指定client连接到的server的地址，多个以逗号分隔(优先取addresses然后再取host)
+spring.rabbitmq.requested-heartbeat: 指定心跳超时，单位秒，0为不指定；默认60s
+spring.rabbitmq.publisher-confirms: 是否启用【发布确认】
+spring.rabbitmq.publisher-returns: 是否启用【发布返回】
+spring.rabbitmq.connection-timeout: 连接超时，单位毫秒，0表示无穷大，不超时
+spring.rabbitmq.parsed-addresses:
+
+
+\# ssl
+spring.rabbitmq.ssl.enabled: 是否支持ssl
+spring.rabbitmq.ssl.key-store: 指定持有SSL certificate的key store的路径
+spring.rabbitmq.ssl.key-store-password: 指定访问key store的密码
+spring.rabbitmq.ssl.trust-store: 指定持有SSL certificates的Trust store
+spring.rabbitmq.ssl.trust-store-password: 指定访问trust store的密码
+spring.rabbitmq.ssl.algorithm: ssl使用的算法，例如，TLSv1.1
+
+
+\# cache
+spring.rabbitmq.cache.channel.size: 缓存中保持的channel数量
+spring.rabbitmq.cache.channel.checkout-timeout: 当缓存数量被设置时，从缓存中获取一个channel的超时时间，单位毫秒；如果为0，则总是创建一个新channel
+spring.rabbitmq.cache.connection.size: 缓存的连接数，只有是CONNECTION模式时生效
+spring.rabbitmq.cache.connection.mode: 连接工厂缓存模式：CHANNEL 和 CONNECTION
+
+
+\# listener
+spring.rabbitmq.listener.simple.auto-startup: 是否启动时自动启动容器
+spring.rabbitmq.listener.simple.acknowledge-mode: 表示消息确认方式，其有三种配置方式，分别是none、manual和auto；默认auto
+spring.rabbitmq.listener.simple.concurrency: 最小的消费者数量
+spring.rabbitmq.listener.simple.max-concurrency: 最大的消费者数量
+spring.rabbitmq.listener.simple.prefetch: 指定一个请求能处理多少个消息，如果有事务的话，必须大于等于transaction数量.
+spring.rabbitmq.listener.simple.transaction-size: 指定一个事务处理的消息数量，最好是小于等于prefetch的数量.
+spring.rabbitmq.listener.simple.default-requeue-rejected: 决定被拒绝的消息是否重新入队；默认是true（与参数acknowledge-mode有关系）
+spring.rabbitmq.listener.simple.idle-event-interval: 多少长时间发布空闲容器时间，单位毫秒
+
+spring.rabbitmq.listener.simple.retry.enabled: 监听重试是否可用
+spring.rabbitmq.listener.simple.retry.max-attempts: 最大重试次数
+spring.rabbitmq.listener.simple.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
+spring.rabbitmq.listener.simple.retry.multiplier: 应用于上一重试间隔的乘数
+spring.rabbitmq.listener.simple.retry.max-interval: 最大重试时间间隔
+spring.rabbitmq.listener.simple.retry.stateless: 重试是有状态or无状态
+
+
+\# template
+spring.rabbitmq.template.mandatory: 启用强制信息；默认false
+spring.rabbitmq.template.receive-timeout: receive() 操作的超时时间
+spring.rabbitmq.template.reply-timeout: sendAndReceive() 操作的超时时间
+spring.rabbitmq.template.retry.enabled: 发送重试是否可用 
+spring.rabbitmq.template.retry.max-attempts: 最大重试次数
+spring.rabbitmq.template.retry.initial-interval: 第一次和第二次尝试发布或传递消息之间的间隔
+spring.rabbitmq.template.retry.multiplier: 应用于上一重试间隔的乘数
+spring.rabbitmq.template.retry.max-interval: 最大重试时间间隔
+
+属性配置可参照：<https://blog.csdn.net/en_joker/article/details/80103519>
 

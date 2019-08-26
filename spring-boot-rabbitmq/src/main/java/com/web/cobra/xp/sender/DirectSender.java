@@ -18,6 +18,7 @@ public class DirectSender {
 	public void send(User user) {
 		//this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user);
 		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user, new CorrelationData(UUID.randomUUID().toString()));
+		this.rabbitTemplate.convertAndSend(RabbitmqConfig.DIRECT_EXCHANGE, "direct.pwl", user, null, new CorrelationData(UUID.randomUUID().toString()));
 	}
 
 }
