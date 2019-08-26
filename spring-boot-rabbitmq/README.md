@@ -181,7 +181,9 @@ public class RabbitmqCallbackImpl implements ConfirmCallback, ReturnCallback {
 ### 什么样的消息会进入死信队列？
 
 1.消息的TTL过期。
-2.消费者对broker应答Nack，并且消息禁止重回队列。
+
+2.消费者对broker应答Nack，并且消息禁止重回队列。(spring.rabbitmq.listener.simple.default-requeue-rejected:false)
+
 3.Queue队列长度已达上限。
 
 ### 场景分析
@@ -234,7 +236,6 @@ spring.rabbitmq.cache.channel.size: 缓存中保持的channel数量
 spring.rabbitmq.cache.channel.checkout-timeout: 当缓存数量被设置时，从缓存中获取一个channel的超时时间，单位毫秒；如果为0，则总是创建一个新channel
 spring.rabbitmq.cache.connection.size: 缓存的连接数，只有是CONNECTION模式时生效
 spring.rabbitmq.cache.connection.mode: 连接工厂缓存模式：CHANNEL 和 CONNECTION
-
 
 \# listener
 spring.rabbitmq.listener.simple.auto-startup: 是否启动时自动启动容器
